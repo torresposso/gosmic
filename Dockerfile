@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copy dependency files
 COPY go.mod go.sum ./
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
+RUN --mount=type=cache,id=cacheKey:gomod,target=/go/pkg/mod \
     go mod download
 
 # Copy source code
@@ -18,8 +18,8 @@ COPY . .
 RUN templ generate
 
 # Build the application
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
-    --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+RUN --mount=type=cache,id=cacheKey:gomod,target=/go/pkg/mod \
+    --mount=type=cache,id=cacheKey:gobuild,target=/root/.cache/go-build \
     CGO_ENABLED=0 GOOS=linux go build -o /bin/app main.go
 
 # Final Stage
