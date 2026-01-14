@@ -1,0 +1,27 @@
+version: '3'
+
+dotenv: ['.env']
+
+vars:
+  PORT: '{{.PORT}}'
+
+tasks:
+  default:
+    desc: Run the development server with live reload
+    cmds:
+      - task: dev
+
+  dev:
+    desc: Watch templates and run the server with live reload
+    cmds:
+      - templ generate --watch --proxy="http://localhost:{{.PORT}}" --cmd="go run main.go"
+
+  test:
+    desc: Run all tests
+    cmds:
+    - gotestsum --format pkgname-and-test-fails -- $(go list ./... | grep -v "^github.com/torresposso/gosmic-code$")
+
+  test:watch:
+    desc: Run tests on file changes
+    cmds:
+    - gotestsum --watch --format pkgname-and-test-fails -- $(go list ./... | grep -v "^github.com/torresposso/gosmic-code$")

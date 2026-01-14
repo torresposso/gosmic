@@ -1,0 +1,55 @@
+package views
+
+templ Layout(title string, isLoggedIn bool, csrf string, flash string, flashType string, contents templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>{ title } | Gosmic Code</title>
+		<link rel="stylesheet" href="/static/css/pico.min.css"/>
+		<link rel="stylesheet" href="/static/css/styles.css"/>
+		<!-- HTMX removed for plain SSR -->
+		<script src="/static/js/alpine.min.js" defer></script>
+	</head>
+	<body>
+		<nav class="navbar">
+			<div class="container">
+				<a href="/" class="brand">
+					<strong>🚀 Gosmic Code</strong>
+				</a>
+				<ul>
+					<li><a href="/">Base</a></li>
+					if isLoggedIn {
+						<li><a href="/dashboard">Command Center</a></li>
+						<li><a href="/dashboard/posts">Mission Logs</a></li>
+						<li><a href="/logout" class="secondary">Abort Session</a></li>
+					} else {
+						<li><a href="/login">Identify</a></li>
+						<li><a href="/register" role="button">Enlist</a></li>
+					}
+				</ul>
+			</div>
+		</nav>
+
+		<main class="container">
+			@FlashMessage(flash, flashType)
+			@contents
+		</main>
+
+		<footer>
+			<div class="container">
+				<small>Powered by Fiber v3 + PocketBase + HTMX + Alpine.js // Warp Drive Active ⚡</small>
+			</div>
+		</footer>
+	</body>
+	</html>
+}
+
+templ FlashMessage(flash string, flashType string) {
+	if flash != "" {
+		<div class={ "flash " + flashType } x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)">
+			{ flash }
+		</div>
+	}
+}

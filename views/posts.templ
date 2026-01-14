@@ -1,0 +1,109 @@
+package views
+
+import "github.com/torresposso/gosmic/pb"
+
+templ Posts(posts []pb.Post, csrf string) {
+	<header>
+		<hgroup>
+			<h1>📚 Mission Logs</h1>
+			<h2>Archive of your journey</h2>
+		</hgroup>
+		<a href="/dashboard" role="button" class="secondary">← Return to Command Center</a>
+	</header>
+
+	<section class="create-post">
+		<article>
+			<header>✏️ New Log Entry</header>
+			<form method="POST" action="/dashboard/posts">
+				<input type="hidden" name="_csrf" value={ csrf }/>
+				<div class="grid">
+					<label for="title">Subject</label>
+					<input type="text" id="title" name="title" required placeholder="Enter log subject"/>
+				</div>
+				<label for="content">Log Content</label>
+				<textarea id="content" name="content" rows="4" placeholder="Record your findings..."></textarea>
+				<label>
+					<input type="checkbox" id="public" name="public"/>
+					Broadcast into deep space (Public)
+				</label>
+				<button type="submit" class="primary">Save Log</button>
+			</form>
+		</article>
+	</section>
+
+	<section class="posts-list">
+		<h2>Decrypted Logs</h2>
+		@PostsList(posts, csrf)
+	</section>
+}
+
+templ PostsList(posts []pb.Post, csrf string) {
+	<div id="posts-container">
+		if len(posts) == 0 {
+			<article>
+				<p>No logs found. Begin your documentation above, Commander.</p>
+			</article>
+		} else {
+			for _, post := range posts {
+				@PostItem(post, csrf)
+			}
+		}
+	</div>
+}
+
+templ PostItem(post pb.Post, csrf string) {
+	<article class="post-item" id={ "post-" + post.ID }>
+		<header>
+			<div class="post-header">
+				<h3>{ post.Title }</h3>
+				if post.Public {
+					<span class="badge primary">Broadcasted</span>
+				} else {
+					<span class="badge secondary">Encrypted</span>
+				}
+			</div>
+			<small>Officer { post.Author } | Stardate: { post.Created }</small>
+		</header>
+		<p>{ post.Content }</p>
+		<footer class="grid">
+			<a href={ templ.SafeURL("/dashboard/posts/" + post.ID + "/edit") } role="button" class="secondary outline">
+				Edit Log
+			</a>
+
+			<form method="POST" action={ templ.SafeURL("/dashboard/posts/" + post.ID) }>
+				<input type="hidden" name="_method" value="DELETE"/>
+				<input type="hidden" name="_csrf" value={ csrf }/>
+				<button type="submit" class="danger">Purge Record</button>
+			</form>
+		</footer>
+	</article>
+}
+
+templ EditPostForm(post pb.Post, csrf string) {
+	<article class="post-item" id={ "post-" + post.ID }>
+		<header>Edit Log: { post.ID }</header>
+		<form method="POST" action={ templ.SafeURL("/dashboard/posts/" + post.ID) }>
+			<input type="hidden" name="_method" value="PUT"/>
+			<input type="hidden" name="_csrf" value={ csrf } />
+			<label for="title">Subject</label>
+			<input type="text" name="title" value={ post.Title } required />
+
+			<label for="content">Content</label>
+			<textarea name="content" rows="4">{ post.Content }</textarea>
+
+			<label>
+				if post.Public {
+					<input type="checkbox" name="public" checked />
+				} else {
+					<input type="checkbox" name="public" />
+				}
+				Broadcast (Public)
+			</label>
+
+			<div class="grid">
+				<button type="submit" class="primary">Update Log</button>
+				<a href="/dashboard/posts" role="button" class="secondary">Cancel</a>
+			</div>
+		</form>
+	</article>
+}

@@ -1,0 +1,93 @@
+package views
+
+templ Login(errorMsg string, email string, registered bool, csrf string) {
+	<article>
+		<header>
+			<hgroup>
+				<h1>🔐 Identification</h1>
+				<h2>Enter credentials for clearance</h2>
+			</hgroup>
+		</header>
+
+		if errorMsg != "" {
+			<div class="flash error">
+				⚠️ { errorMsg }
+			</div>
+		}
+
+		if registered {
+			<div class="flash success">
+				✅ Enlistment successful! Proceed to identification.
+			</div>
+		}
+
+		<form method="POST" action="/login">
+			<input type="hidden" name="_csrf" value={ csrf }/>
+			<div id="form-container">
+				<label for="email">
+					Comms ID (Email)
+					<input type="email" id="email" name="email" value={ email } required 
+						   placeholder="officer@fleet.com" autocomplete="email"/>
+				</label>
+
+				<label for="password">
+					Passcode
+					<input type="password" id="password" name="password" required 
+						   placeholder="••••••••" autocomplete="current-password"/>
+				</label>
+
+				<button type="submit" class="primary">Verify Identity</button>
+			</div>
+		</form>
+
+		<footer>
+			<p>Not enlisted? <a href="/register">Join the Fleet</a></p>
+		</footer>
+	</article>
+}
+
+templ Register(errorMsg string, email string, name string, csrf string) {
+	<article>
+		<header>
+			<hgroup>
+				<h1>📝 Enlistment Form</h1>
+				<h2>Join the Gosmic Code Fleet</h2>
+			</hgroup>
+		</header>
+
+		if errorMsg != "" {
+			<div class="flash error">
+				⚠️ { errorMsg }
+			</div>
+		}
+
+		<form method="POST" action="/register">
+			<input type="hidden" name="_csrf" value={ csrf }/>
+			<label for="name">
+				Officer Name
+				<input type="text" id="name" name="name" value={ name } required placeholder="Commander Name"/>
+			</label>
+
+			<label for="email">
+				Comms ID (Email)
+				<input type="email" id="email" name="email" value={ email } required placeholder="officer@fleet.com"/>
+			</label>
+
+			<label for="password">
+				Passcode (min 8 chars)
+				<input type="password" id="password" name="password" required minlength="8"/>
+			</label>
+
+			<label for="passwordConfirm">
+				Confirm Passcode
+				<input type="password" id="passwordConfirm" name="passwordConfirm" required/>
+			</label>
+
+			<button type="submit" class="primary">Submit Enlistment</button>
+		</form>
+
+		<footer>
+			<p>Already enlisted? <a href="/login">Verify Identity</a></p>
+		</footer>
+	</article>
+}

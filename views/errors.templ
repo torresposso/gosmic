@@ -1,0 +1,16 @@
+package views
+
+import "strconv"
+
+templ Error(message string, statusCode int) {
+	<article class="error-page" style="text-align: center; padding: 3rem;">
+		<header>
+			<h1>⚠️ Mission Critical Failure</h1>
+			<h2>Status Code: { strconv.Itoa(statusCode) }</h2>
+		</header>
+		<p>{ message }</p>
+		<footer>
+			<a href="/" role="button" class="secondary">Return to Base</a>
+		</footer>
+	</article>
+}

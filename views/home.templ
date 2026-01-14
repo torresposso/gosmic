@@ -1,0 +1,121 @@
+package views
+
+import (
+	"strconv"
+)
+
+templ Index(isLoggedIn bool) {
+	<article class="hero">
+		<header>
+			<hgroup>
+				<h1>🚀 Launch Your Full-Stack Mission</h1>
+				<h2>Gosmic Code: Fiber v3 + PocketBase + HTMX</h2>
+			</hgroup>
+			<p>
+				Prepare for liftoff. Master the art of intergalactic web development. 
+				Build production-ready ship systems with the speed of Go Fiber v3, 
+				the storage capacity of PocketBase, and the dynamic maneuvering of HTMX.
+			</p>
+			<div class="grid">
+				<a href="/register" role="button" class="primary">Initialize Sequence →</a>
+				<a href="https://docs.gofiber.io/" role="button" class="secondary">📖 Flight Manual</a>
+			</div>
+		</header>
+	</article>
+
+	<section class="features">
+		<h2>Ship Systems</h2>
+		<div class="grid">
+			<article>
+				<h3>🔐 Security Clearance</h3>
+				<p>Secure crew registration and identification with PocketBase. JWT tokens and protected cargo holds.</p>
+			</article>
+			<article>
+				<h3>📝 Cargo Operations</h3>
+				<p>Manage mission logs. Create, read, update, and jettison records with full database integration.</p>
+			</article>
+			<article>
+				<h3>⚡ Hyperdrive UI</h3>
+				<p>HTMX for near-light-speed interactions without heavy JavaScript payloads.</p>
+			</article>
+		</div>
+	</section>
+
+	if !isLoggedIn {
+		<section class="cta">
+			<article>
+				<h3>Ready to Launch?</h3>
+				<p>Join the fleet of developers building the next generation of interstellar apps.</p>
+				<a href="/register" role="button" class="primary">Enlist Now →</a>
+			</article>
+		</section>
+	}
+}
+
+templ Dashboard(userName string, userEmail string, postCount int, csrf string) {
+	<header>
+		<hgroup>
+			<h1>📊 Command Center</h1>
+			<h2>Welcome aboard, Commander { userName }!</h2>
+		</hgroup>
+	</header>
+
+	<section class="stats">
+		<article>
+			<header>📝 Mission Logs</header>
+			<strong>{ strconv.Itoa(postCount) }</strong>
+		</article>
+		<article>
+			<header>📧 Comms ID</header>
+			<strong>{ userEmail }</strong>
+		</article>
+		<article>
+			<header>⚡ System Status</header>
+			<strong class="success">Online</strong>
+		</article>
+	</section>
+
+	<section class="quick-actions">
+		<h2>Directives</h2>
+		<div class="grid">
+			<article>
+				<header>📝 New Log Entry</header>
+				<div style="margin-bottom: 1rem;">
+					<!-- Standard Search Form -->
+					<form method="GET" action="/dashboard/posts">
+						<input type="search" name="q" placeholder="Search logs..." />
+						<button type="submit" class="secondary outline">Search</button>
+					</form>
+				</div>
+				<form method="POST" action="/dashboard/posts">
+					<input type="hidden" name="_csrf" value={ csrf }/>
+					<div id="new-post-form">
+						<label for="title">
+							Subject
+							<input type="text" id="title" name="title" required placeholder="Mission update subject"/>
+						</label>
+						<label for="content">
+							Log Content
+							<textarea id="content" name="content" placeholder="Record your observations, Commander..."></textarea>
+						</label>
+						<label>
+							<input type="checkbox" id="public" name="public"/>
+							Broadcast into deep space (Public)
+						</label>
+						<button type="submit" class="primary">Submit Log</button>
+					</div>
+				</form>
+			</article>
+			<article>
+				<header>🔗 Navigation</header>
+				<nav>
+					<ul>
+						<li><a href="/dashboard/posts">📚 Review All Logs</a></li>
+						<li><a href="/">🏠 Return to Base</a></li>
+						<li><a href="/logout">🚪 Eject / Logout</a></li>
+					</ul>
+				</nav>
+			</article>
+		</div>
+	</section>
+}
