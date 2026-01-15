@@ -33,8 +33,8 @@ func main() {
 
 	app := fiber.New(fiber.Config{
 		AppName:       "Fiber v3 + PocketBase Tutorial",
-		StrictRouting: true,
-		CaseSensitive: true,
+		StrictRouting: false,
+		CaseSensitive: false,
 	})
 
 	sessStore := session.NewStore()
