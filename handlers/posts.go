@@ -138,6 +138,17 @@ func (h *PostHandler) Delete() fiber.Handler {
 
 		postID := c.Params("id")
 		err := h.postService.Delete(c.Context(), client, postID)
+
+		if c.Get("HX-Request") == "true" {
+			c.Set("Content-Type", "text/html")
+			if err != nil {
+				return views.FlashMessage("Failed to purge log", "error").Render(c.Context(), c.Response().BodyWriter())
+			}
+			// When deleting with hx-target="#post-ID", returning only the OOB flash
+			// effectively clears the target element.
+			return views.FlashMessage("Mission log purged successfully", "success").Render(c.Context(), c.Response().BodyWriter())
+		}
+
 		sess, _ := h.sessStore.Get(c)
 		if err != nil {
 			sess.Set("flash", "Failed to purge log")
@@ -160,7 +171,25 @@ func (h *PostHandler) Toggle() fiber.Handler {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})
 		}
 
-		err := h.postService.TogglePublic(c.Context(), client, c.Params("id"))
+		id := c.Params("id")
+		err := h.postService.TogglePublic(c.Context(), client, id)
+
+		if c.Get("HX-Request") == "true" {
+			c.Set("Content-Type", "text/html")
+			if err != nil {
+				return views.FlashMessage("Failed to toggle visibility", "error").Render(c.Context(), c.Response().BodyWriter())
+			}
+
+			post, err := h.postService.Get(c.Context(), client, id)
+			if err != nil {
+				return views.FlashMessage("Log disappeared during transmission", "error").Render(c.Context(), c.Response().BodyWriter())
+			}
+
+			csrfToken := csrf.TokenFromContext(c)
+			views.PostItem(*post, csrfToken).Render(c.Context(), c.Response().BodyWriter())
+			return views.FlashMessage("Visibility matrix updated", "success").Render(c.Context(), c.Response().BodyWriter())
+		}
+
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to toggle visibility"})
 		}

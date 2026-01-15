@@ -1,5 +1,7 @@
 # Node.js dependencies
 node_modules/
+package.json
+package-lock.json
 
 # PocketBase
 pb_data/
@@ -30,3 +32,7 @@ coverage/
 
 # Misc
 *.local
+
+# Binaries
+bin/
+tmp/

@@ -3,46 +3,106 @@ package views
 import "github.com/torresposso/gosmic/pb"
 
 templ Posts(posts []pb.Post, csrf string) {
-	<header>
-		<hgroup>
-			<h1>📚 Mission Logs</h1>
-			<h2>Archive of your journey</h2>
-		</hgroup>
-		<a href="/dashboard" role="button" class="secondary">← Return to Command Center</a>
-	</header>
+	<!-- Page Header -->
+	<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+		<div>
+			<h1 class="text-4xl font-bold mb-2">
+				<span class="text-primary" role="img" aria-label="Books">📚</span> Mission Logs
+			</h1>
+			<p class="text-base-content/80">Archive of your journey through the cosmos</p>
+		</div>
+		<a href="/dashboard" class="btn btn-outline btn-primary gap-2">
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+				<path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+			</svg>
+			Return to Command Center
+		</a>
+	</div>
 
-	<section class="create-post">
-		<article>
-			<header>✏️ New Log Entry</header>
-			<form method="POST" action="/dashboard/posts">
+	<!-- New Log Entry HUD -->
+	<div class="card bg-base-300/40 backdrop-blur-xl border border-primary/20 shadow-2xl relative overflow-hidden group/card transition-all duration-500 hover:border-primary/40 mb-12">
+		<!-- Decorative HUD Accents -->
+		<div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary/40"></div>
+		<div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-primary/40"></div>
+		<div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary/40"></div>
+		<div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary/40"></div>
+
+		<div class="card-body relative z-10">
+			<h2 class="card-title text-primary tracking-tighter flex items-center gap-3 mb-6">
+				<span class="relative">
+					<span class="absolute inset-0 bg-primary/20 blur-lg animate-pulse"></span>
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+					</svg>
+				</span>
+				<span class="uppercase font-black text-xl italic underline decoration-primary/30 underline-offset-8">New Mission Log</span>
+			</h2>
+
+			<form method="POST" action="/dashboard/posts" class="space-y-6">
 				<input type="hidden" name="_csrf" value={ csrf }/>
-				<div class="grid">
-					<label for="title">Subject</label>
-					<input type="text" id="title" name="title" required placeholder="Enter log subject"/>
-				</div>
-				<label for="content">Log Content</label>
-				<textarea id="content" name="content" rows="4" placeholder="Record your findings..."></textarea>
-				<label>
-					<input type="checkbox" id="public" name="public"/>
-					Broadcast into deep space (Public)
-				</label>
-				<button type="submit" class="primary">Save Log</button>
-			</form>
-		</article>
-	</section>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+					<div class="form-control">
+						<label class="label pt-0" for="posts-title">
+							<span class="label-text font-black text-[10px] uppercase tracking-[0.2em] text-primary/80">Identifier_Subject</span>
+						</label>
+						<div class="relative">
+							<div class="absolute inset-0 bg-primary/5 blur-md opacity-0 transition-opacity duration-500 peer-focus:opacity-100"></div>
+							<input type="text" id="posts-title" name="title" required placeholder="GOSMIC_LOG_ENTRY_NUMBER..." class="peer input input-bordered w-full bg-base-200/50 border-primary/20 focus:border-primary/60 focus:bg-base-200 transition-all duration-300 font-mono text-primary placeholder:text-primary/30 uppercase text-sm tracking-wider"/>
+						</div>
+					</div>
 
-	<section class="posts-list">
-		<h2>Decrypted Logs</h2>
-		@PostsList(posts, csrf)
-	</section>
+					<div class="form-control flex flex-col justify-end">
+						<label for="posts-public" class="flex items-center justify-between p-4 bg-primary/5 rounded border border-primary/10 hover:border-primary/30 transition-all duration-300 cursor-pointer">
+							<div class="flex flex-col">
+								<span class="text-[10px] font-black uppercase tracking-widest text-primary/80">Deep Space Broadcast (Public)</span>
+								<span class="text-[9px] font-mono text-primary/60 uppercase">Mode: Multi_Frequency</span>
+							</div>
+							<input type="checkbox" id="posts-public" name="public" class="toggle toggle-primary toggle-sm border-primary/30"/>
+						</label>
+					</div>
+				</div>
+
+				<div class="form-control">
+					<label class="label pb-1" for="posts-content">
+						<span class="label-text font-black text-[10px] uppercase tracking-[0.2em] text-primary/80">Observation_Matrix</span>
+					</label>
+					<textarea id="posts-content" name="content" rows="4" placeholder="Awaiting commander input..." class="textarea textarea-bordered bg-base-200/50 border-primary/20 focus:border-primary/60 focus:bg-base-200 transition-all duration-300 font-mono text-sm leading-relaxed text-primary/90 placeholder:text-primary/30"></textarea>
+				</div>
+
+				<div class="flex justify-end pt-2">
+					<button type="submit" class="btn btn-primary px-16 border-none shadow-[0_0_20px_-5px_rgba(var(--p),0.4)] hover:shadow-[0_0_35px_-5px_rgba(var(--p),0.7)] group overflow-hidden relative">
+						<div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--p)_0%,_transparent_70%)] opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
+						<span class="relative z-10 flex items-center justify-center gap-3 font-black tracking-[0.4em] text-sm italic group-hover:scale-105 transition-all duration-500">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+							</svg>
+							SAVE_LOG_ENTRY
+						</span>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Posts List -->
+	<div class="mb-4">
+		<h2 class="text-2xl font-bold">
+			<span class="text-primary" role="img" aria-label="Satellite">📡</span> Decrypted Logs
+		</h2>
+	</div>
+	@PostsList(posts, csrf)
 }
 
 templ PostsList(posts []pb.Post, csrf string) {
-	<div id="posts-container">
+	<div id="posts-container" class="space-y-4">
 		if len(posts) == 0 {
-			<article>
-				<p>No logs found. Begin your documentation above, Commander.</p>
-			</article>
+			<div class="alert alert-info">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+				</svg>
+				<span>No logs found. Begin your documentation above, Commander.</span>
+			</div>
 		} else {
 			for _, post := range posts {
 				@PostItem(post, csrf)
@@ -52,58 +112,109 @@ templ PostsList(posts []pb.Post, csrf string) {
 }
 
 templ PostItem(post pb.Post, csrf string) {
-	<article class="post-item" id={ "post-" + post.ID }>
-		<header>
-			<div class="post-header">
-				<h3>{ post.Title }</h3>
-				if post.Public {
-					<span class="badge primary">Broadcasted</span>
-				} else {
-					<span class="badge secondary">Encrypted</span>
-				}
+	<div class="card bg-base-200 shadow-lg hover:shadow-xl transition-shadow" id={ "post-" + post.ID }>
+		<div class="card-body">
+			<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+				<div class="flex items-center gap-3">
+					<h3 class="card-title text-lg">{ post.Title }</h3>
+					if post.Public {
+						<span class="badge badge-primary badge-sm">Broadcasted</span>
+					} else {
+						<span class="badge badge-ghost badge-sm">Encrypted</span>
+					}
+				</div>
+				<span class="text-xs text-base-content/70">
+					Officer { post.Author } • Stardate: { post.Created }
+				</span>
 			</div>
-			<small>Officer { post.Author } | Stardate: { post.Created }</small>
-		</header>
-		<p>{ post.Content }</p>
-		<footer class="grid">
-			<a href={ templ.SafeURL("/dashboard/posts/" + post.ID + "/edit") } role="button" class="secondary outline">
-				Edit Log
-			</a>
-
-			<form method="POST" action={ templ.SafeURL("/dashboard/posts/" + post.ID) }>
-				<input type="hidden" name="_method" value="DELETE"/>
-				<input type="hidden" name="_csrf" value={ csrf }/>
-				<button type="submit" class="danger">Purge Record</button>
-			</form>
-		</footer>
-	</article>
+			<p class="text-base-content/80 mt-2">{ post.Content }</p>
+			<div class="card-actions justify-end mt-4">
+				<a href={ templ.SafeURL("/dashboard/posts/" + post.ID + "/edit") } class="btn btn-primary btn-outline btn-sm gap-1">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+						<path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+					</svg>
+					Edit
+				</a>
+				<button 
+					hx-post={ "/api/posts/" + post.ID + "/toggle" }
+					hx-vals={ `{"_csrf": "` + csrf + `"}` }
+					hx-target={ "#post-" + post.ID }
+					hx-swap="outerHTML"
+					class="btn btn-ghost btn-outline btn-sm gap-1"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+					</svg>
+					Toggle
+				</button>
+				<div x-data="{ confirming: false }" class="inline-flex gap-2">
+					<button x-show="!confirming" @click="confirming = true" type="button" class="btn btn-error btn-outline btn-sm gap-1">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+							<path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+						</svg>
+						Purge
+					</button>
+					<div x-show="confirming" class="inline-flex gap-2 animate-in fade-in zoom-in duration-200" x-cloak>
+						<button 
+							hx-delete={ "/dashboard/posts/" + post.ID } 
+							hx-vals={ `{"_csrf": "` + csrf + `"}` }
+							hx-target={ "#post-" + post.ID }
+							hx-swap="outerHTML"
+							class="btn btn-error btn-sm"
+						>
+							Confirm Purge
+						</button>
+						<button @click="confirming = false" type="button" class="btn btn-ghost btn-sm">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 }
 
 templ EditPostForm(post pb.Post, csrf string) {
-	<article class="post-item" id={ "post-" + post.ID }>
-		<header>Edit Log: { post.ID }</header>
-		<form method="POST" action={ templ.SafeURL("/dashboard/posts/" + post.ID) }>
-			<input type="hidden" name="_method" value="PUT"/>
-			<input type="hidden" name="_csrf" value={ csrf } />
-			<label for="title">Subject</label>
-			<input type="text" name="title" value={ post.Title } required />
+	<div class="min-h-[60vh] flex items-center justify-center">
+		<div class="card bg-base-200 shadow-2xl w-full max-w-2xl">
+			<div class="card-body">
+				<h2 class="card-title text-2xl mb-4">
+					<span class="text-primary" role="img" aria-label="Pencil">✏️</span> Edit Log: <span class="text-primary">{ post.ID }</span>
+				</h2>
+				<form method="POST" action={ templ.SafeURL("/dashboard/posts/" + post.ID) }>
+					<input type="hidden" name="_method" value="PUT"/>
+					<input type="hidden" name="_csrf" value={ csrf }/>
+					
+					<div class="form-control mb-4">
+						<label class="label" for="edit-title">
+							<span class="label-text font-semibold">Subject</span>
+						</label>
+						<input type="text" id="edit-title" name="title" value={ post.Title } required class="input input-bordered w-full focus:border-primary transition-colors"/>
+					</div>
 
-			<label for="content">Content</label>
-			<textarea name="content" rows="4">{ post.Content }</textarea>
+					<div class="form-control mb-4">
+						<label class="label" for="edit-content">
+							<span class="label-text font-semibold">Content</span>
+						</label>
+						<textarea id="edit-content" name="content" rows="6" class="textarea textarea-bordered focus:border-primary transition-colors">{ post.Content }</textarea>
+					</div>
 
-			<label>
-				if post.Public {
-					<input type="checkbox" name="public" checked />
-				} else {
-					<input type="checkbox" name="public" />
-				}
-				Broadcast (Public)
-			</label>
+					<div class="form-control mb-6">
+						<label for="edit-public" class="label cursor-pointer justify-start gap-4 p-2 hover:bg-base-300 rounded-lg transition-colors">
+							if post.Public {
+								<input type="checkbox" id="edit-public" name="public" checked class="checkbox checkbox-primary"/>
+							} else {
+								<input type="checkbox" id="edit-public" name="public" class="checkbox checkbox-primary"/>
+							}
+							<span class="label-text font-semibold">Broadcast (Publicly visible to all crew members)</span>
+						</label>
+					</div>
 
-			<div class="grid">
-				<button type="submit" class="primary">Update Log</button>
-				<a href="/dashboard/posts" role="button" class="secondary">Cancel</a>
+					<div class="flex flex-col sm:flex-row gap-3">
+						<button type="submit" class="btn btn-primary flex-1">Update Log</button>
+						<a href="/dashboard/posts" class="btn btn-outline flex-1">Cancel</a>
+					</div>
+				</form>
 			</div>
-		</form>
-	</article>
+		</div>
+	</div>
 }

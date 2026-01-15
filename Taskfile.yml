@@ -13,8 +13,22 @@ tasks:
 
   dev:
     desc: Watch templates and run the server with live reload
+    deps: [cloudflared, templ, css]
+
+  templ:
+    desc: Watch templates and run the server with live reload
     cmds:
       - templ generate --watch --proxy="http://localhost:{{.PORT}}" --cmd="go run main.go"
+
+  cloudflared:
+    desc: Run cloudflared tunnel
+    cmds:
+      - cloudflared tunnel run dev
+
+  css:
+    desc: Watch and build Tailwind CSS
+    cmds:
+      - bunx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --watch --minify
 
   test:
     desc: Run all tests

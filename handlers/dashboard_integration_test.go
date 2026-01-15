@@ -67,14 +67,14 @@ func TestDashboardAccess(t *testing.T) {
 
 	req := httptest.NewRequest("GET", "/dashboard", nil)
 	resp, err := app.Test(req)
-
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	bodyBytes, _ := io.ReadAll(resp.Body)
 	bodyStr := string(bodyBytes)
 
-	assert.Contains(t, bodyStr, "Welcome aboard, Commander Test User")
+	assert.Contains(t, bodyStr, "Welcome aboard")
+	assert.Contains(t, bodyStr, "Commander Test User")
 	assert.Contains(t, bodyStr, "test@example.com")
 	// assert.Contains(t, bodyStr, "1") // Post count check, brittle if format changes
 }

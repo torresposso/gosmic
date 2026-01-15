@@ -1,93 +1,176 @@
 package views
 
 templ Login(errorMsg string, email string, registered bool, csrf string) {
-	<article>
-		<header>
-			<hgroup>
-				<h1>🔐 Identification</h1>
-				<h2>Enter credentials for clearance</h2>
-			</hgroup>
-		</header>
+	<div class="min-h-[70vh] flex items-center justify-center">
+		<div class="card bg-base-200 shadow-2xl w-full max-w-md">
+			<div class="card-body">
+				<div class="text-center mb-6">
+					<h1 class="text-3xl font-bold">
+						<span class="text-primary" role="img" aria-label="Lock">🔐</span> Identification
+					</h1>
+					<p class="text-base-content/80 mt-2">Enter credentials for clearance</p>
+				</div>
 
-		if errorMsg != "" {
-			<div class="flash error">
-				⚠️ { errorMsg }
+				if errorMsg != "" {
+					<div class="alert alert-error mb-4" role="alert" aria-live="assertive">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+						</svg>
+						<span>{ errorMsg }</span>
+					</div>
+				}
+
+				if registered {
+					<div class="alert alert-success mb-4" role="status" aria-live="polite">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+						</svg>
+						<span>Enlistment successful! Proceed to identification.</span>
+					</div>
+				}
+
+				<form method="POST" action="/login">
+					<input type="hidden" name="_csrf" value={ csrf }/>
+					
+					<div class="form-control mb-4">
+						<label class="label" for="email">
+							<span class="label-text">Comms ID (Email)</span>
+						</label>
+						<input 
+							type="email" 
+							id="email" 
+							name="email" 
+							value={ email } 
+							required 
+							placeholder="officer@fleet.com" 
+							autocomplete="email"
+							class="input input-bordered w-full"
+						/>
+					</div>
+
+					<div class="form-control mb-6">
+						<label class="label" for="password">
+							<span class="label-text">Passcode</span>
+						</label>
+						<input 
+							type="password" 
+							id="password" 
+							name="password" 
+							required 
+							placeholder="••••••••" 
+							autocomplete="current-password"
+							class="input input-bordered w-full"
+						/>
+					</div>
+
+					<button type="submit" class="btn btn-primary w-full">
+						Verify Identity
+					</button>
+				</form>
+
+				<div class="divider">OR</div>
+
+				<p class="text-center text-base-content/80">
+					Not enlisted? 
+					<a href="/register" class="link link-primary font-semibold focus:outline-primary">Join the Fleet</a>
+				</p>
 			</div>
-		}
-
-		if registered {
-			<div class="flash success">
-				✅ Enlistment successful! Proceed to identification.
-			</div>
-		}
-
-		<form method="POST" action="/login">
-			<input type="hidden" name="_csrf" value={ csrf }/>
-			<div id="form-container">
-				<label for="email">
-					Comms ID (Email)
-					<input type="email" id="email" name="email" value={ email } required 
-						   placeholder="officer@fleet.com" autocomplete="email"/>
-				</label>
-
-				<label for="password">
-					Passcode
-					<input type="password" id="password" name="password" required 
-						   placeholder="••••••••" autocomplete="current-password"/>
-				</label>
-
-				<button type="submit" class="primary">Verify Identity</button>
-			</div>
-		</form>
-
-		<footer>
-			<p>Not enlisted? <a href="/register">Join the Fleet</a></p>
-		</footer>
-	</article>
+		</div>
+	</div>
 }
 
 templ Register(errorMsg string, email string, name string, csrf string) {
-	<article>
-		<header>
-			<hgroup>
-				<h1>📝 Enlistment Form</h1>
-				<h2>Join the Gosmic Code Fleet</h2>
-			</hgroup>
-		</header>
+	<div class="min-h-[70vh] flex items-center justify-center">
+		<div class="card bg-base-200 shadow-2xl w-full max-w-md">
+			<div class="card-body">
+				<div class="text-center mb-6">
+					<h1 class="text-3xl font-bold">
+						<span class="text-primary" role="img" aria-label="Notepad">📝</span> Enlistment Form
+					</h1>
+					<p class="text-base-content/80 mt-2">Join the Gosmic Code Fleet</p>
+				</div>
 
-		if errorMsg != "" {
-			<div class="flash error">
-				⚠️ { errorMsg }
+				if errorMsg != "" {
+					<div class="alert alert-error mb-4" role="alert" aria-live="assertive">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+						</svg>
+						<span>{ errorMsg }</span>
+					</div>
+				}
+
+				<form method="POST" action="/register">
+					<input type="hidden" name="_csrf" value={ csrf }/>
+					
+					<div class="form-control mb-4">
+						<label class="label" for="name">
+							<span class="label-text">Officer Name</span>
+						</label>
+						<input 
+							type="text" 
+							id="name" 
+							name="name" 
+							value={ name } 
+							required 
+							placeholder="Commander Name"
+							class="input input-bordered w-full"
+						/>
+					</div>
+
+					<div class="form-control mb-4">
+						<label class="label" for="email">
+							<span class="label-text">Comms ID (Email)</span>
+						</label>
+						<input 
+							type="email" 
+							id="email" 
+							name="email" 
+							value={ email } 
+							required 
+							placeholder="officer@fleet.com"
+							class="input input-bordered w-full"
+						/>
+					</div>
+
+					<div class="form-control mb-4">
+						<label class="label" for="password">
+							<span class="label-text">Passcode (min 8 chars)</span>
+						</label>
+						<input 
+							type="password" 
+							id="password" 
+							name="password" 
+							required 
+							minlength="8"
+							class="input input-bordered w-full"
+						/>
+					</div>
+
+					<div class="form-control mb-6">
+						<label class="label" for="passwordConfirm">
+							<span class="label-text">Confirm Passcode</span>
+						</label>
+						<input 
+							type="password" 
+							id="passwordConfirm" 
+							name="passwordConfirm" 
+							required
+							class="input input-bordered w-full"
+						/>
+					</div>
+
+					<button type="submit" class="btn btn-primary w-full">
+						Submit Enlistment
+					</button>
+				</form>
+
+				<div class="divider">OR</div>
+
+				<p class="text-center text-base-content/80">
+					Already enlisted? 
+					<a href="/login" class="link link-primary font-semibold focus:outline-primary">Verify Identity</a>
+				</p>
 			</div>
-		}
-
-		<form method="POST" action="/register">
-			<input type="hidden" name="_csrf" value={ csrf }/>
-			<label for="name">
-				Officer Name
-				<input type="text" id="name" name="name" value={ name } required placeholder="Commander Name"/>
-			</label>
-
-			<label for="email">
-				Comms ID (Email)
-				<input type="email" id="email" name="email" value={ email } required placeholder="officer@fleet.com"/>
-			</label>
-
-			<label for="password">
-				Passcode (min 8 chars)
-				<input type="password" id="password" name="password" required minlength="8"/>
-			</label>
-
-			<label for="passwordConfirm">
-				Confirm Passcode
-				<input type="password" id="passwordConfirm" name="passwordConfirm" required/>
-			</label>
-
-			<button type="submit" class="primary">Submit Enlistment</button>
-		</form>
-
-		<footer>
-			<p>Already enlisted? <a href="/login">Verify Identity</a></p>
-		</footer>
-	</article>
+		</div>
+	</div>
 }

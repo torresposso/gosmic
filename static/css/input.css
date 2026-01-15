@@ -1,0 +1,10 @@
+@import "tailwindcss" source(none);
+@plugin "daisyui" {
+  themes: night --default, light;
+}
+
+@source "../../views/**/*.templ";
+
+[x-cloak] {
+  display: none !important;
+}

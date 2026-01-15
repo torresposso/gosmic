@@ -24,6 +24,7 @@ import (
 func main() {
 	pbURL := getEnv("PB_URL", "http://localhost:8090")
 	port := getEnv("PORT", "8080")
+	baseURL := getEnv("BASE_URL", "http://localhost:"+port)
 	isProd := os.Getenv("GO_ENV") == "production"
 
 	// Create a global PocketBase client (connection pool is shared)
@@ -103,7 +104,7 @@ func main() {
 	api := app.Group("/api")
 	api.Post("/posts/:id/toggle", postHandler.Toggle())
 
-	log.Printf("Server starting on http://localhost:%s", port)
+	log.Printf("Server starting on %s", baseURL)
 	log.Printf("PocketBase: %s", pbURL)
 	log.Fatal(app.Listen(":" + port))
 }
