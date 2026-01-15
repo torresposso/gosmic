@@ -33,6 +33,9 @@ COPY --from=builder /bin/app /app/app
 # Copy static assets
 COPY --from=builder /app/static /app/static
 
+# Copy documentation chapters
+COPY --from=builder /app/chapters /app/chapters
+
 # Default environment variables
 ENV PORT=8080
 ENV GO_ENV=production
