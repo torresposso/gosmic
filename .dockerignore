@@ -48,4 +48,3 @@ Taskfile.yml
 
 # Test files
 *_test.go
-chapters/
