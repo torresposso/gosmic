@@ -31,7 +31,7 @@ func Docs(chapters []services.Chapter, currentID string, content string) templ.C
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"drawer lg:drawer-open\"><input id=\"docs-drawer\" type=\"checkbox\" class=\"drawer-toggle\"><div class=\"drawer-content flex flex-col px-6 py-4\"><!-- Page content here --><label for=\"docs-drawer\" class=\"btn btn-primary drawer-button lg:hidden mb-4\">Open Menu</label><div class=\"prose prose-slate dark:prose-invert max-w-none prose-pre:bg-base-300 prose-pre:text-base-content prose-headings:text-primary\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"drawer lg:drawer-open\"><input id=\"docs-drawer\" type=\"checkbox\" class=\"drawer-toggle\"><div class=\"drawer-content flex flex-col px-6 py-4\"><!-- Page content here --><label for=\"docs-drawer\" class=\"btn btn-primary drawer-button lg:hidden mb-4\">Open Menu</label><div class=\"prose max-w-none \n            prose-headings:text-primary \n            prose-p:text-base-content/90 \n            prose-strong:text-secondary \n            prose-a:text-accent prose-a:no-underline hover:prose-a:underline\n            prose-code:text-warning prose-code:bg-base-300 prose-code:rounded prose-code:px-1 prose-code:font-mono\n            prose-pre:bg-base-300 prose-pre:text-base-content\n            prose-li:text-base-content/90\n            prose-ol:text-base-content/90\n            prose-ul:text-base-content/90\n            prose-blockquote:border-l-primary prose-blockquote:text-base-content/80 prose-blockquote:bg-base-200 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r\n            \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -60,7 +60,7 @@ func Docs(chapters []services.Chapter, currentID string, content string) templ.C
 			var templ_7745c5c3_Var3 templ.SafeURL
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/docs/" + chapter.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/docs.templ`, Line: 26, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/docs.templ`, Line: 36, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -86,7 +86,7 @@ func Docs(chapters []services.Chapter, currentID string, content string) templ.C
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(chapter.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/docs.templ`, Line: 27, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/docs.templ`, Line: 37, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
