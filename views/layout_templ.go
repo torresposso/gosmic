@@ -36,13 +36,13 @@ func Layout(title string, isLoggedIn bool, csrf string, flash string, flashType 
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 9, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 10, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " | Gosmic Code</title><link rel=\"stylesheet\" href=\"/static/css/app.css\"><script src=\"/static/js/alpine.min.js\" defer></script><script src=\"/static/js/htmx.min.js\"></script></head><body class=\"min-h-screen flex flex-col bg-base-100\" hx-boost=\"true\"><!-- Skip Link for Accessibility --><a href=\"#main\" class=\"sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-content focus:px-4 focus:py-2 focus:rounded-md focus:font-semibold\">Skip to main content</a><!-- Navigation --><nav aria-label=\"Main navigation\" class=\"navbar bg-base-200/80 backdrop-blur-md sticky top-0 z-50 shadow-lg\"><div class=\"navbar-start\"><!-- Mobile menu --><div class=\"dropdown\"><div tabindex=\"0\" role=\"button\" aria-label=\"Open mobile menu\" class=\"btn btn-ghost lg:hidden\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 12h8m-8 6h16\"></path></svg></div><ul tabindex=\"-1\" class=\"menu menu-sm dropdown-content bg-base-200 rounded-box z-50 mt-3 w-52 p-2 shadow-lg\" aria-label=\"Mobile navigation menu\"><li><a href=\"/\"><span role=\"img\" aria-label=\"Home\">🏠</span> Base</a></li>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " | Gosmic Code</title><meta name=\"description\" content=\"Gosmic: The intergalactic Go Fiber v3 and PocketBase starter kit for building out-of-this-world full-stack missions.\"><link rel=\"stylesheet\" href=\"/static/css/app.css\"></head><body class=\"min-h-screen flex flex-col bg-base-100\" hx-boost=\"true\"><!-- Skip Link for Accessibility --><a href=\"#main\" class=\"sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-content focus:px-4 focus:py-2 focus:rounded-md focus:font-semibold\">Skip to main content</a><!-- Navigation --><nav aria-label=\"Main navigation\" class=\"navbar bg-base-200/80 backdrop-blur-md sticky top-0 z-50 shadow-lg\"><div class=\"navbar-start\"><!-- Mobile menu --><div class=\"dropdown\"><div tabindex=\"0\" role=\"button\" aria-label=\"Open mobile menu\" class=\"btn btn-ghost lg:hidden\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 12h8m-8 6h16\"></path></svg></div><ul tabindex=\"-1\" class=\"menu menu-sm dropdown-content bg-base-200 rounded-box z-50 mt-3 w-52 p-2 shadow-lg\" aria-label=\"Mobile navigation menu\"><li><a href=\"/\"><span role=\"img\" aria-label=\"Home\">🏠</span> Base</a></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -98,7 +98,7 @@ func Layout(title string, isLoggedIn bool, csrf string, flash string, flashType 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</main><!-- Footer --><footer class=\"footer footer-center bg-base-200 text-base-content p-10 mt-auto\"><aside><p class=\"text-sm opacity-80\">Powered by <span class=\"text-primary font-semibold\">Fiber v3</span> +  <span class=\"text-primary font-semibold\">PocketBase</span> +  <span class=\"text-primary font-semibold\">Alpine.js</span></p><p class=\"text-xs opacity-70 mt-2\"><span role=\"img\" aria-label=\"Lightning bolt\">⚡</span> Warp Drive Active • Ad Astra Per Aspera</p></aside></footer></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</main><!-- Footer --><footer class=\"footer footer-center bg-base-200 text-base-content p-10 mt-auto\"><aside><p class=\"text-sm opacity-80\">Powered by <span class=\"text-primary font-semibold\">Fiber v3</span> + <span class=\"text-primary font-semibold\">PocketBase</span> + <span class=\"text-primary font-semibold\">Alpine.js</span></p><p class=\"text-xs opacity-70 mt-2\"><span role=\"img\" aria-label=\"Lightning bolt\">⚡</span> Warp Drive Active • Ad Astra Per Aspera</p></aside></footer><script src=\"/static/js/alpine.min.js\" defer></script><script src=\"/static/js/htmx.min.js\" defer></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -140,7 +140,7 @@ func FlashMessage(flash string, flashType string) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(flash)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 101, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 117, Col: 15}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -158,7 +158,7 @@ func FlashMessage(flash string, flashType string) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(flash)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 111, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 132, Col: 15}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -176,7 +176,7 @@ func FlashMessage(flash string, flashType string) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(flash)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 121, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 147, Col: 15}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {

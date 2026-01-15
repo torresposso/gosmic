@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/extractors"
+	"github.com/gofiber/fiber/v3/middleware/compress"
 	"github.com/gofiber/fiber/v3/middleware/csrf"
 	"github.com/gofiber/fiber/v3/middleware/limiter"
 	"github.com/gofiber/fiber/v3/middleware/logger"
@@ -39,6 +40,9 @@ func main() {
 	sessStore := session.NewStore()
 
 	app.Use(recover.New())
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed,
+	}))
 	app.Use(logger.New(logger.Config{
 		Format:     "${time} | ${status} | ${latency} | ${method} ${path}\n",
 		TimeFormat: "2006-01-02 15:04:05",
@@ -50,9 +54,13 @@ func main() {
 	}))
 
 	// Static files
+	// Static files
 	app.Use("/static", static.New("./static", static.Config{
-		CacheDuration: 3600 * time.Second,
-		Compress:      true,
+		Compress: true,
+		ModifyResponse: func(c fiber.Ctx) error {
+			c.Set("Cache-Control", "public, max-age=31536000")
+			return nil
+		},
 	}))
 
 	// CSRF Protection
