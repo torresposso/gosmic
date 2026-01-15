@@ -25,19 +25,21 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/extractors"
+	"github.com/gofiber/fiber/v3/middleware/compress"
 	"github.com/gofiber/fiber/v3/middleware/csrf"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/recover"
-	"github.com/torresposso/gosmic/config"
+	"github.com/gofiber/fiber/v3/middleware/static"
+	// ... imports
 )
 
 func main() {
-	// 1. Load Configuration (Signals)
-	cfg := config.Load()
+	// 1. Load Configurations
+	port := getEnv("PORT", "8080")
 
 	// 2. Initialize the App
 	app := fiber.New(fiber.Config{
@@ -48,20 +50,25 @@ func main() {
 
 	// 3. Middleware Chain (The Shield Generator)
 	app.Use(recover.New()) 
-	app.Use(logger.New())  
+	app.Use(logger.New())
+	app.Use(compress.New()) // Gzip/Brotli
 
 	// 🛡️ CSRF Protection
 	app.Use(csrf.New(csrf.Config{
-		Extractor:      extractors.FromForm("_csrf"),
-		CookieName:     "csrf_",
-		CookieSameSite: "Lax",
-		CookieHTTPOnly: true,
-		IdleTimeout:    1 * time.Hour,
+		// ... config
+	}))
+
+	// 📂 Static Assets with Cache Control
+	app.Use("/static", static.New("./static", static.Config{
+		Compress: true,
+		ModifyResponse: func(c fiber.Ctx) error {
+			c.Set("Cache-Control", "public, max-age=31536000")
+			return nil
+		},
 	}))
 
 	// 4. Launch (Hyperspace Jump)
-	log.Printf("Server starting on port %s", cfg.ServerPort)
-	log.Fatal(app.Listen(":" + cfg.ServerPort))
+	log.Fatal(app.Listen(":" + port))
 }
 ```
 

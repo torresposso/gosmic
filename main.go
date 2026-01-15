@@ -84,14 +84,18 @@ func main() {
 	// Initialize Services
 	postService := services.NewPostService(postRepo)
 	authService := services.NewAuthService(authRepo)
+	docService := services.NewDocService("./chapters")
 
 	// Initialize Handlers
 	postHandler := handlers.NewPostHandler(postService, sessStore)
 	authHandler := handlers.NewAuthHandler(authService, globalClient)
 	rootHandler := handlers.NewRootHandler(globalClient, postService)
+	docHandler := handlers.NewDocHandler(docService, globalClient)
 
 	// Public routes
 	app.Get("/", rootHandler.Home())
+	app.Get("/docs", docHandler.Index())
+	app.Get("/docs/:chapter", docHandler.Show())
 	app.Get("/login", authHandler.ShowLogin())
 	app.Post("/login", authHandler.Login())
 	app.Get("/register", authHandler.ShowRegister())

@@ -13,7 +13,9 @@ Why check systems in a simulation?
 3.  **Isolation**: We test *our* logic, not PocketBase's logic.
 
 ### Dependency Injection (DI)
-Our handlers accept a `*pb.Client`. To test them, we need to mock the *layer below it*—the HTTP Transport.
+Our handlers accept Repositories or Services interfaces. To test them, we can use mocks.
+
+However, for `pb.Client` which is a struct, we mock the **HTTP Transport**.
 
 ### 1. The Mock Uplink (`MockRoundTripper`)
 Go's `http.Client` uses a `RoundTripper` interface to execute requests. By replacing this, we can intercept and control the responses.
@@ -28,36 +30,25 @@ func (m *MockRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) 
 }
 ```
 
-### 2. The Verification Logic (`handlers/login_integration_test.go`)
+### 2. Testing Handlers (`handlers/posts_test.go`)
 
 We use `app.Test(req)` from Fiber to inject requests directly into the router.
 
 ```go
-func TestLoginFlowWithCSRF(t *testing.T) {
-    // A. Setup the Simulation (Mock Response)
-    mockTripper := &MockRoundTripper{
-        RoundTripFunc: func(req *http.Request) *http.Response {
-            if strings.Contains(req.URL.Path, "auth-with-password") {
-                // Return a fake token and user record
-                return &http.Response{
-                    StatusCode: http.StatusOK,
-                    Body:       io.NopCloser(bytes.NewBuffer(fakeSuccessJSON)),
-                }
-            }
-            return &http.Response{StatusCode: 404}
-        },
-    }
+func TestCreatePost(t *testing.T) {
+    // A. Setup
+    mockService := new(mocks.PostService)
+    handler := handlers.NewPostHandler(mockService, store)
+    app := fiber.New()
+    app.Post("/posts", handler.Create())
 
-    // B. Inject the Mock
-    pbClient := pb.NewClient("http://mock-pb")
-    pbClient.HTTPClient.Transport = mockTripper
+    // B. Execute
+    req := httptest.NewRequest("POST", "/posts", body)
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    resp, _ := app.Test(req)
 
-    // C. Run the Scenario
-    // 1. GET /login (Retrieve CSRF)
-    // 2. POST /login (Submit Credentials + CSRF)
-    
-    // D. Assert Outcome
-    assert.Equal(t, http.StatusSeeOther, resp.StatusCode) // Redirect to Dashboard
+    // C. Verify
+    assert.Equal(t, http.StatusSeeOther, resp.StatusCode)
 }
 ```
 
@@ -67,31 +58,15 @@ Since Templ components are just functions that write to a buffer, we can test ou
 ```go
 func TestDashboardView(t *testing.T) {
     buf := new(bytes.Buffer)
-    err := Dashboard("Shepard", "shepard@sr2.com", 5, "token").Render(context.Background(), buf)
+    // Render the component to buffer
+    err := Dashboard("Shepard", ...).Render(context.Background(), buf)
+    
     assert.NoError(t, err)
-
-    content := buf.String()
-    assert.Contains(t, content, "Welcome aboard, Commander Shepard!")
+    assert.Contains(t, buf.String(), "Welcome aboard, Commander Shepard!")
 }
 ```
 
-### 4. API Client Testing (`pb/client_test.go`)
-We verify our `pb.Client` by spawning a local `httptest.Server` that acts like a fake PocketBase.
-
-```go
-func TestAuthWithPassword(t *testing.T) {
-    server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        json.NewEncoder(w).Encode(authResponse{Token: "test-token"})
-    }))
-    defer server.Close()
-
-    client := NewClient(server.URL)
-    token, _, _ := client.AuthWithPassword("test@email.com", "pass")
-    assert.Equal(t, "test-token", token)
-}
-```
-
-## 跑 Running Simulations
+## 🏃 Running Simulations
 
 We use our launch codes (`Taskfile.yml`) to run the suite with filtered output, hiding configuration noise and focusing on the core systems.
 
@@ -104,7 +79,7 @@ task test:v
 ```
 
 > [!NOTE]
-> **Commander's Log**: Real-world tests often require setting up middleware (like CSRF) within the test function to match the production environment, as seen in `login_integration_test.go`.
+> **Commander's Log**: We recently conducted a full audit (`TESTING_AUDIT.md`) and significantly improved coverage for `handlers/posts.go`. Always keep your simulations up to date!
 
 ---
 [Next: 10 - Colonization (Production & Deployment) →](./10-colonization.md)

@@ -1,0 +1,33 @@
+package views
+
+import "github.com/torresposso/gosmic/services"
+
+templ Docs(chapters []services.Chapter, currentID string, content string) {
+<div class="drawer lg:drawer-open">
+    <input id="docs-drawer" type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content flex flex-col px-6 py-4">
+        <!-- Page content here -->
+        <label for="docs-drawer" class="btn btn-primary drawer-button lg:hidden mb-4">Open Menu</label>
+
+        <div class="prose max-w-none">
+            @templ.Raw(content)
+        </div>
+
+        <!-- Navigation Buttons (Optional, could be added later) -->
+    </div>
+    <div class="drawer-side z-40">
+        <label for="docs-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+        <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+            <!-- Sidebar content here -->
+            <li class="menu-title">Mission Log</li>
+            for _, chapter := range chapters {
+            <li>
+                <a href={ templ.SafeURL("/docs/" + chapter.ID) } class={ templ.KV("active", chapter.ID==currentID) }>
+                    { chapter.Title }
+                </a>
+            </li>
+            }
+        </ul>
+    </div>
+</div>
+}

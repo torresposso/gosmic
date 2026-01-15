@@ -1,7 +1,7 @@
 # 03 - Navigation (Routing) 🗺️
 
-**Mission Phase**: plotting Course  
-**Objective**: Master the ship's navigation computer to handle URL routes.
+**Mission Phase**: Plotting Course  
+**Objective**: Master the ship's navigation computer to handle URL routes using Fiber's router and Middleware groups.
 
 ## 📍 Coordinates (Basic Routes)
 
@@ -9,14 +9,10 @@ Navigate the ship to different sectors.
 
 ```go
 // GET request: Retrieve sector info
-app.Get("/sector/alpha", func(c fiber.Ctx) error {
-    return c.SendString("Welcome to Sector Alpha")
-})
+app.Get("/", rootHandler.Home())
 
 // POST request: Send data to base
-app.Post("/comms", func(c fiber.Ctx) error {
-    return c.SendString("Message received")
-})
+app.Post("/login", authHandler.Login())
 ```
 
 ## 🎯 Dynamic Coordinates (Parameters)
@@ -24,25 +20,40 @@ app.Post("/comms", func(c fiber.Ctx) error {
 Capture variable segments like coordinates.
 
 ```go
-// /system/:id (e.g., /system/sol)
-app.Get("/system/:id", func(c fiber.Ctx) error {
-    system := c.Params("id")
-    return c.SendString("Approaching System: " + system)
-})
+// /posts/:id (e.g., /posts/123)
+app.Get("/posts/:id", postHandler.Get())
+```
+
+In the handler:
+```go
+func (h *PostHandler) Get() fiber.Handler {
+    return func(c fiber.Ctx) error {
+        id := c.Params("id")
+        return c.SendString("Scanning Log: " + id)
+    }
+}
 ```
 
 ## 🌌 Route Groups (Sectors)
 
-Organize routes into logical sectors.
+Organize routes into logical sectors, especially to apply security protocols (Middleware).
 
 ```go
-// Public Sector
-public := app.Group("/")
-public.Get("/login", ShowLogin)
+// 1. Initialize Handlers (Dependency Injection)
+authHandler := handlers.NewAuthHandler(authService, globalClient)
+postHandler := handlers.NewPostHandler(postService, sessStore)
 
-// Restricted Sector (Command)
-command := app.Group("/command")
-command.Get("/logs", ShowLogs)
+// 2. Public Sector
+app.Get("/", rootHandler.Home())
+app.Get("/login", authHandler.ShowLogin())
+
+// 3. Protected Sector (Requires Authentication)
+// All routes in this group will pass through AuthMiddleware first
+protected := app.Group("/dashboard", middleware.AuthMiddleware(globalClient))
+
+protected.Get("", rootHandler.Dashboard())
+protected.Get("/posts", postHandler.List())
+protected.Post("/posts", postHandler.Create())
 ```
 
 ## 🔄 Hyperjump (Redirection)
@@ -50,10 +61,12 @@ command.Get("/logs", ShowLogs)
 Redirect to another sector.
 
 ```go
-app.Get("/jump", func(c fiber.Ctx) error {
-    // Fiber v3 syntax
-    return c.Redirect().To("/sector/beta")
-})
+// Direct redirect
+return c.Redirect().To("/dashboard")
+
+// With Flash Message (via Session)
+utils.SetFlash(c, "success", "Hyperjump successful!")
+return c.Redirect().To("/system/beta")
 ```
 
 ---

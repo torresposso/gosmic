@@ -18,13 +18,14 @@ Before boarding, ensure you have the following tools installed to maintain life 
     go install github.com/a-h/templ/cmd/templ@latest
     ```
 4.  **PocketBase**: The backend data system (Cargo Hold).
+    *   Download the appropriate binary for your OS.
 
 ## 🏗️ Initialize the Project
 
 1.  **Clone the Mission Repo**
     ```bash
-    git clone https://github.com/torresposso/gosmic-code.git
-    cd gosmic-code
+    git clone https://github.com/torresposso/gosmic.git
+    cd gosmic
     ```
 
 2.  **Install Dependencies**
@@ -35,33 +36,39 @@ Before boarding, ensure you have the following tools installed to maintain life 
 
 ## 📂 Ship Schematic (Project Structure)
 
-Understanding the layout of the ship is crucial for survival.
+Understanding the layout of the ship is crucial for survival. We follow an **Onion Architecture** to keep the core systems isolated and testable.
 
 ```text
 gosmic/
 ├── main.go                    # Bridge: Application entry point and router configuration.
 ├── Taskfile.yml               # Launch Codes: Shortcuts for build, dev, and test commands.
 ├── .env                       # Signal Calibration: Environment variables (PORT, PB_URL).
-├── handlers/                  # Crew: Core logic handling HTTP requests.
-│   ├── render.go             # Translator: Helper to render Templ components.
-│   ├── auth.go               # Security: Login, Register, and Session management.
-│   ├── home.go               # Command: Dashboard and Landing page logic.
-│   └── posts.go              # Operations: CRUD logic for Mission Logs.
+├── handlers/                  # Crew: HTTP Handlers (Presentation Layer).
+│   ├── auth.go               # Security: Login, Register, Logout logic.
+│   ├── root.go               # Command: Dashboard and Landing page logic.
+│   └── posts.go              # Operations: Mission Logs CRUD.
+├── services/                  # Officers: Business Logic Layer.
+│   ├── auth_service.go       # Auth rules and token management.
+│   └── post_service.go       # Post creation and retrieval logic.
+├── repositories/              # Engineering: Data Access Layer.
+│   ├── auth_repo.go          # Database interactions for Users.
+│   └── post_repo.go          # Database interactions for Posts.
+├── middleware/                # Shields: Request interceptors (Auth, Flash, etc).
 ├── pb/
-│   └── client.go             # Cargo Interface: Typed wrapper for the PocketBase API.
+│   └── client.go             # Cargo Interface: Typed wrapper for PocketBase API.
 ├── views/                     # Windows: UI Components (Templ files).
-│   ├── layout.templ          # Hull: Base HTML structure (Head, Nav, Footer).
-│   ├── home.templ            # Views for public landing and user dashboard.
-│   ├── auth.templ            # Forms for identification and enlistment.
-│   └── posts.templ           # Views for listing and editing logs.
-└── static/                    # Paint: CSS (Pico.css) and JS (Alpine.js) assets.
+│   ├── layout.templ          # Hull: Base HTML structure.
+│   ├── home.templ            # Landing & Dashboard.
+│   ├── auth.templ            # Login/Register Forms.
+│   └── posts.templ           # Post lists and forms.
+└── static/                    # Paint: CSS (Tailwind) and JS (Alpine.js/HTMX).
 ```
 
 ## 🚀 First Launch
 
 1.  **Start PocketBase** (in a separate terminal)
     ```bash
-    ./pocketbase serve
+    ./pocketbase serve --http=0.0.0.0:8090
     ```
     *Ensure the backend is reachable at port 8090.*
 

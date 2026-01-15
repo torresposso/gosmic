@@ -15,29 +15,21 @@ type Client struct {
     BaseURL    string
     HTTPClient *http.Client
     AuthToken  string // The JWT key to the cargo hold
-    AuthRecord *User  // Cached user details
 }
 ```
 
 ### 2. Authentication (Handshake)
-To open the hold, we authenticate with credentials. This method returns the raw token and the user record, allowing the handler to manage the session (e.g., via cookies).
+To open the hold, we authenticate with credentials. This returns the raw token and user record.
 
 ```go
 func (c *Client) AuthWithPassword(email, password string) (string, *User, error) {
-    body := map[string]interface{}{
-        "identity": email,
-        "password": password,
-    }
-    
     // ... Send POST to /api/collections/users/auth-with-password
-    // ... Decode response
-    
-    return authResp.Token, &authResp.Record, nil
+    // ... Returns token and user struct
 }
 ```
 
-### 3. Request Scoping
-A critical pattern in our architecture is **Request Scoping**. The `globalClient` holds the connection pool, but for each request, we create a lightweight clone that carries the specific user's token.
+### 3. Request Scoping (Critical Architecture)
+We use a **Request Scoping** pattern. The `globalClient` holds the connection pool, but for each request, we create a lightweight clone that carries the specific user's token. This prevents race conditions where one user's token could overwrite another's in a shared client.
 
 ```go
 // WithToken creates a shallow copy of the client with the user's token.
@@ -46,23 +38,22 @@ func (c *Client) WithToken(token string) *Client {
     return &Client{
         BaseURL:    c.BaseURL,
         HTTPClient: c.HTTPClient, 
-        AuthToken:  token,
+        AuthToken:  token, // Request-specific token
     }
 }
 ```
 
-### 4. Listing Manifests (Fetch Data)
-Retrieve the list of mission logs using the scoped client.
+### 4. Typed Methods
+We create strongly-typed methods for our data models.
 
 ```go
-func (c *Client) ListPosts() ([]Post, error) {
-    // ... Send GET to /api/collections/posts/records
+func (c *Client) CreatePost(post *Post) error {
+    // ... Send POST to /api/collections/posts/records
     // ... Attach Authorization header using c.AuthToken
-    // ... Decode JSON into []Post
 }
 ```
 
-This manual control gives us precision and ensures our application remains lightweight and fast.
+This manual control ensures our application remains lightweight and type-safe.
 
 ---
 [Next: 06 - Hyperdrive UI (Alpine.js) →](./06-hyperdrive-ui.md)

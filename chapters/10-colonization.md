@@ -52,6 +52,14 @@ EXPOSE 8080
 CMD ["./main"]
 ```
 
+## 🚀 Deployment (Railway/Render)
+
+We configure the ship to adapt to its environment using variables.
+
+*   `PORT`: The port the web server listens on.
+*   `PB_URL`: The full URL to your PocketBase instance (e.g., `https://pocketbase.fly.dev`).
+*   `GO_ENV`: Set to `production` to enable secure cookies and disable debug logs.
+
 ## 🚩 Final Words from Command
 
 You have successfully built the **Gosmic Code** mission log system. You have mastered:
@@ -59,6 +67,7 @@ You have successfully built the **Gosmic Code** mission log system. You have mas
 - **Fiber v3**: High-performance HTTP routing.
 - **Templ**: Type-safe, compiled HTML rendering.
 - **PocketBase**: A self-contained backend solution.
-- **Alpine.js**: Lightweight interactivity.
+- **Onion Architecture**: Scalable and testable code structure.
+- **HTMX & Alpine**: "Hyperdrive" UI interactivity.
 
 **Mission Accomplished.** 🚀

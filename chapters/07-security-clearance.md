@@ -29,15 +29,14 @@ Using cookies introduces a vulnerability: **Cross-Site Request Forgery (CSRF)**.
 We authenticate against PocketBase, receive a token, and plant it in a secure cookie.
 
 ```go
-func Login(globalClient *pb.Client) fiber.Handler {
+func (h *AuthHandler) Login() fiber.Handler {
     return func(c fiber.Ctx) error {
         // ... Retrieve credentials ...
-        csrfToken := csrf.TokenFromContext(c)
-
-        // 1. Authenticate with PocketBase
-        token, _, err := globalClient.AuthWithPassword(email, password)
+        
+        // 1. Authenticate with PocketBase via Service
+        token, user, err := h.AuthService.Login(email, password)
         if err != nil {
-             return RenderLayout(c, "Login", ..., views.Login(..., csrfToken))
+             // ... handle error
         }
 
         // 2. Set the Secure Cookie
@@ -47,6 +46,7 @@ func Login(globalClient *pb.Client) fiber.Handler {
             HTTPOnly: true,  // JS cannot access
             SameSite: "Lax", // CSRF mitigation
             Path:     "/",
+            Secure:   isProd, // SSL only in production
         })
         
         return c.Redirect().To("/dashboard")
@@ -66,12 +66,17 @@ func AuthMiddleware(globalClient *pb.Client) fiber.Handler {
             return c.Redirect().To("/login")
         }
         
-        // 2. Hydrate Request-Scoped Client
-        // We attach the token to a new client instance for this request.
-        userClient := globalClient.WithToken(token)
+        // 2. Check Validity with PocketBase
+        // This validates the token AND refreshes user data
+        user, err := globalClient.WithToken(token).AuthRefresh()
+        if err != nil {
+            // Token expired or invalid
+            return c.Redirect().To("/login")
+        }
         
-        // 3. Store in Context
-        c.Locals("pb", userClient)
+        // 3. Hydrate Context
+        c.Locals("user", user)
+        c.Locals("pb_client", globalClient.WithToken(token))
         
         return c.Next()
     }
