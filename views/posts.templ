@@ -112,15 +112,15 @@ templ PostsList(posts []pb.Post, csrf string) {
 }
 
 templ PostItem(post pb.Post, csrf string) {
-	<div class="card bg-base-200 shadow-lg hover:shadow-xl transition-shadow" id={ "post-" + post.ID }>
+	<div class="card bg-base-200 shadow-lg hover:shadow-xl transition-all duration-300" id={ "post-" + post.ID }>
 		<div class="card-body">
 			<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
 				<div class="flex items-center gap-3">
 					<h3 class="card-title text-lg">{ post.Title }</h3>
 					if post.Public {
-						<span class="badge badge-primary badge-sm">Broadcasted</span>
+						<span class="badge badge-primary badge-sm animate-pop">Broadcasted</span>
 					} else {
-						<span class="badge badge-ghost badge-sm">Encrypted</span>
+						<span class="badge badge-ghost badge-sm animate-pop">Encrypted</span>
 					}
 				</div>
 				<span class="text-xs text-base-content/70">
@@ -160,7 +160,8 @@ templ PostItem(post pb.Post, csrf string) {
 							hx-delete={ "/dashboard/posts/" + post.ID } 
 							hx-vals={ `{"_csrf": "` + csrf + `"}` }
 							hx-target={ "#post-" + post.ID }
-							hx-swap="outerHTML"
+							hx-swap="outerHTML swap:300ms"
+							@click={ "document.getElementById('post-" + post.ID + "').classList.add('purge-animated')" }
 							class="btn btn-error btn-sm"
 						>
 							Confirm Purge

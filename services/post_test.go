@@ -101,4 +101,21 @@ func TestPostService_CRUD(t *testing.T) {
 
 		assert.NoError(t, err)
 	})
+
+	t.Run("TogglePublicSuccess", func(t *testing.T) {
+		mockRepo.On("TogglePublic", ctx, client, "1").Return(nil).Once()
+
+		err := service.TogglePublic(ctx, client, "1")
+
+		assert.NoError(t, err)
+	})
+
+	t.Run("TogglePublicError", func(t *testing.T) {
+		mockRepo.On("TogglePublic", ctx, client, "1").Return(errors.New("toggle error")).Once()
+
+		err := service.TogglePublic(ctx, client, "1")
+
+		assert.Error(t, err)
+		assert.Equal(t, "toggle error", err.Error())
+	})
 }

@@ -8,9 +8,9 @@
 *   **Language:** Go (Golang) 1.25+
 *   **Web Framework:** Fiber v3 (Express-inspired, high performance)
 *   **UI Engine:** Templ (Type-safe HTML generation)
-*   **Database & Auth:** PocketBase (SQLite + Realtime API)
+*   **Database & Auth:** PocketBase v0.25+ (SQLite + Realtime API)
 *   **Frontend Interactivity:** Alpine.js (Lightweight DOM manipulation)
-*   **CSS Framework:** Pico.css (Semantic, minimal)
+*   **CSS Framework:** Tailwind CSS v4.0 + DaisyUI v5.0 (Modern, utility-first)
 
 ## 2. Business Logic & Entities
 
@@ -40,78 +40,65 @@ Represents the mission logs recorded by the crew.
     *   **Update/Delete:** `author = @request.auth.id` (Ownership enforcement).
     *   **View/List:** `public = true || author = @request.auth.id`.
 
-## 3. Application Architecture
+## 3. Application Architecture (Onion Model)
 
-We follow a **Modular Monolith** approach adapted for Go, emphasizing "Package by Layer" for simplicity in this scale, while adhering to separation of concerns.
+We follow an **Onion Architecture** approach, ensuring that the core business logic is independent of external concerns (like the DB or the Web Framework).
 
 ### Directory Structure
 
 ```text
 /
-├── cmd/                    # (Optional) Application entry points
-├── config/                 # Configuration loading (Env vars)
 ├── handlers/               # [Interface Adapter] HTTP Transport Layer
 │   ├── auth.go             # Handle Login/Register flows
 │   ├── posts.go            # Handle CRUD operations
-│   └── ...
+│   └── root.go             # Main dashboard/home logic
+├── services/               # [Application Layer] Business Logic
+│   ├── auth_service.go     # High-level auth workflows
+│   └── post_service.go     # High-level post operations
+├── repositories/           # [Infrastructure Adapter] Data Persistence
+│   ├── auth_repository.go  # PocketBase auth communication
+│   └── post_repository.go  # PocketBase post queries
 ├── middleware/             # [Cross-Cutting Concerns]
 │   ├── auth.go             # Token validation & Context injection
-│   └── ...
+│   ├── flash.go            # Flash message propagation
+│   └── method_override.go  # PUT/DELETE support in forms
 ├── pb/                     # [Infrastructure] External Service Gateway
 │   └── client.go           # Typed client for PocketBase API
-├── views/                  # [Presentation] UI Logic
-│   ├── components/         # Reusable atoms (Buttons, Inputs)
-│   ├── layouts/            # Base HTML shells
-│   └── pages/              # Full page compositions
-├── static/                 # Public assets (CSS, JS, Images)
-└── main.go                 # Composition Root (Wiring)
+├── views/                  # [Presentation] UI Logic (Templ)
+│   ├── layout.templ        # Base HTML shells
+│   ├── home.templ          # Landing page
+│   └── posts.templ         # Mission logs dashboard
+├── static/                 # Public assets (CSS, JS)
+└── main.go                 # Composition Root (Dependency Injection)
 ```
 
 ### Architectural Patterns
 
-#### 1. The Presentation Layer (Views)
-*   Uses **Templ** to define UI components as Go functions.
-*   **Logic:** Strictly display logic. No business rules or database calls inside `.templ` files.
-*   **Data Flow:** Handlers pass "View Models" (structs or simple types) to Views.
+#### 1. Inversion of Control & DI
+*   **Repositories** implement data access.
+*   **Services** consume Repositories to perform business logic.
+*   **Handlers** consume Services to fulfill HTTP requests.
+*   Wiring happens in `main.go`, ensuring loose coupling and easy testing.
 
-#### 2. The Transport Layer (Handlers)
-*   **Role:** Receive HTTP requests (Fiber Context).
-*   **Responsibility:**
-    1.  Parse Input (Forms, Query Params).
-    2.  Validate Input (Basic formatting).
-    3.  Call Infrastructure/Service Layer.
-    4.  Select the appropriate View to render.
-*   **Constraint:** Handlers should not contain complex business rules (e.g., "Calculate tax").
+#### 2. The Presentation Layer (Views)
+*   Uses **Templ** to define UI components.
+*   **Data Flow:** Handlers pass models to Views.
+*   **UX:** Enhanced with **Alpine.js** for client-side state and **HTMX** for seamless updates.
 
-#### 3. The Infrastructure Layer (PocketBase Client)
-*   **Role:** Communicate with external systems (DB).
-*   **Pattern:** **Proxy Authentication**.
-    *   The Go app acts as a proxy between the User and PocketBase.
-    *   It holds a `globalClient` for general connection pooling.
-    *   It creates a `request-scoped client` using `WithToken()` for every authenticated request.
+#### 3. Proxy Authentication Pattern
+*   The Go app acts as a secure buffer between the User and PocketBase.
+*   **Request-Scoped Client:** Uses `middleware.AuthMiddleware` to inject an authenticated PB client into the context for each request, solving shared-state concurrency bugs.
 
 ## 4. Security Design
 
-*   **Authentication:**
-    *   Stateless JWT (JSON Web Token) issued by PocketBase.
-    *   Stored in **HttpOnly, Secure, SameSite=Lax** cookies.
-    *   **No** LocalStorage usage to prevent XSS token theft.
-*   **CSRF Protection:**
-    *   Double Submit Cookie pattern (managed by Fiber middleware).
-    *   Tokens embedded in forms via `<input type="hidden" name="_csrf">`.
-*   **Input Sanitization:**
-    *   Handled automatically by Templ (Context-aware escaping).
-*   **Authorization:**
-    *   Enforced at the Database level (PocketBase API Rules).
-    *   Enforced at the Route level (Auth Middleware).
+*   **Authentication:** HttpOnly, Secure, SameSite=Lax cookies for PB Tokens.
+*   **CSRF Protection:** Double Submit Cookie pattern via Fiber CSRF middleware.
+*   **Input Sanitization:** Context-aware escaping by Templ.
+*   **A11Y (Accessibility):** Semantic HTML5, Skip links, and ARIA attributes for screen readers.
 
-## 5. Future Scalability (Clean Architecture Evolution)
+## 5. Deployment & Infrastructure
 
-As the mission grows, the architecture should evolve:
-
-1.  **Observability:**
-    *   Implement structured logging and metrics.
-    *   Add distributed tracing.
-
-2.  **Caching Layer:**
-    *   Implement Redis for session storage and data caching.
+*   **Docker:** Multi-stage build (Alpine-based) with Go and Bun.
+*   **Port:** Standardized to `8080`.
+*   **Environment:** Production-ready configuration via `GO_ENV=production`.
+*   **Tunnels:** Integration with `cloudflared` for local development exposure.

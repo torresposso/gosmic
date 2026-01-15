@@ -15,7 +15,8 @@ func TestIndexView(t *testing.T) {
 		assert.NoError(t, err)
 
 		content := buf.String()
-		assert.Contains(t, content, "🚀 Launch Your Full-Stack Mission")
+		assert.Contains(t, content, "Launch Your")
+		assert.Contains(t, content, "Full-Stack Mission")
 		assert.NotContains(t, content, "Ready to Launch?") // CTA should be hidden
 	})
 
@@ -25,7 +26,8 @@ func TestIndexView(t *testing.T) {
 		assert.NoError(t, err)
 
 		content := buf.String()
-		assert.Contains(t, content, "🚀 Launch Your Full-Stack Mission")
+		assert.Contains(t, content, "Launch Your")
+		assert.Contains(t, content, "Full-Stack Mission")
 		assert.Contains(t, content, "Ready to Launch?") // CTA should be visible
 	})
 }
@@ -41,10 +43,12 @@ func TestDashboardView(t *testing.T) {
 	assert.NoError(t, err)
 
 	content := buf.String()
-	assert.Contains(t, content, "📊 Command Center")
-	assert.Contains(t, content, "Welcome aboard, Commander "+userName+"!")
+	assert.Contains(t, content, "Command Center")
+	assert.Contains(t, content, "Welcome aboard")
+	assert.Contains(t, content, userName)
 	assert.Contains(t, content, userEmail)
 	assert.Contains(t, content, "42")
 	assert.Contains(t, content, csrf)
 	assert.Contains(t, content, "name=\"_csrf\"")
+	assert.Contains(t, content, "EXECUTE_TRANSMISSION") // Verify the new HTMX/styled button
 }

@@ -97,4 +97,28 @@ func TestPBPostRepository(t *testing.T) {
 		err := repo.Delete(ctx, client, "p1")
 		assert.NoError(t, err)
 	})
+
+	t.Run("TogglePublic_Success", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method == "GET" {
+				assert.Equal(t, "/api/collections/posts/records/p1", r.URL.Path)
+				w.WriteHeader(http.StatusOK)
+				json.NewEncoder(w).Encode(map[string]any{"id": "p1", "public": false})
+			} else if r.Method == "PATCH" {
+				assert.Equal(t, "/api/collections/posts/records/p1", r.URL.Path)
+				var body map[string]any
+				json.NewDecoder(r.Body).Decode(&body)
+				assert.True(t, body["public"].(bool))
+				w.WriteHeader(http.StatusOK)
+			}
+		}))
+		defer server.Close()
+
+		client := pb.NewClient(server.URL)
+		client.AuthToken = "dummy"
+		repo := NewPostRepository()
+
+		err := repo.TogglePublic(ctx, client, "p1")
+		assert.NoError(t, err)
+	})
 }

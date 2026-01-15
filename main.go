@@ -101,7 +101,7 @@ func main() {
 	protected.Delete("/posts/:id", postHandler.Delete())
 
 	// API routes
-	api := app.Group("/api")
+	api := app.Group("/api", middleware.AuthMiddleware(globalClient))
 	api.Post("/posts/:id/toggle", postHandler.Toggle())
 
 	log.Printf("Server starting on %s", baseURL)

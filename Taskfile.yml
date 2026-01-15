@@ -11,9 +11,23 @@ tasks:
     cmds:
       - task: dev
 
+  build:
+    desc: Build all assets and the binary sequentially
+    cmds:
+      - templ generate
+      - bunx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --minify
+
   dev:
-    desc: Watch templates and run the server with live reload
-    deps: [cloudflared, templ, css]
+    desc: Run all watch tasks concurrently (recomended for development)
+    cmds:
+      - |
+        bunx concurrently --kill-others \
+          --prefix "[{name}]" \
+          --names "TEMPL,CSS,TUNNEL" \
+          --prefix-colors "blue,magenta,cyan" \
+          "task templ" \
+          "task css" \
+          "task cloudflared"
 
   templ:
     desc: Watch templates and run the server with live reload
@@ -33,9 +47,9 @@ tasks:
   test:
     desc: Run all tests
     cmds:
-    - gotestsum --format pkgname-and-test-fails -- $(go list ./... | grep -v "^github.com/torresposso/gosmic-code$")
+      - gotestsum --format pkgname-and-test-fails -- ./...
 
   test:watch:
-    desc: Run tests on file changes
+    desc: Run tests and watch for changes
     cmds:
-    - gotestsum --watch --format pkgname-and-test-fails -- $(go list ./... | grep -v "^github.com/torresposso/gosmic-code$")
+      - gotestsum --watch --format pkgname-and-test-fails -- ./...
