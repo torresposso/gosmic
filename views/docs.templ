@@ -9,7 +9,8 @@ templ Docs(chapters []services.Chapter, currentID string, content string) {
         <!-- Page content here -->
         <label for="docs-drawer" class="btn btn-primary drawer-button lg:hidden mb-4">Open Menu</label>
 
-        <div class="prose max-w-none">
+        <div
+            class="prose prose-slate dark:prose-invert max-w-none prose-pre:bg-base-300 prose-pre:text-base-content prose-headings:text-primary">
             @templ.Raw(content)
         </div>
 
@@ -30,4 +31,12 @@ templ Docs(chapters []services.Chapter, currentID string, content string) {
         </ul>
     </div>
 </div>
+
+<!-- Syntax Highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dockerfile.min.js"></script>
+<script>hljs.highlightAll();</script>
 }
