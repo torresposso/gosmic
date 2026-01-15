@@ -23,10 +23,8 @@ func NewDocHandler(service *services.DocService, client *pb.Client) *DocHandler 
 
 func (h *DocHandler) Index() fiber.Handler {
 	return func(c fiber.Ctx) error {
-		log.Println("DEBUG: DocHandler.Index called")
 		chapters, err := h.Service.GetChapters()
 		if err != nil || len(chapters) == 0 {
-			log.Printf("DEBUG: No chapters found (Err: %v, Len: %d)", err, len(chapters))
 			return c.Status(fiber.StatusNotFound).SendString("No documentation found")
 		}
 		// Redirect to the first chapter

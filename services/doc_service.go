@@ -44,15 +44,10 @@ func NewDocService(chaptersDir string) *DocService {
 
 // GetChapters returns a sorted list of all available chapters
 func (s *DocService) GetChapters() ([]Chapter, error) {
-	absPath, _ := filepath.Abs(s.chaptersDir)
-	fmt.Printf("DEBUG: Reading chapters from: %s (Abs: %s)\n", s.chaptersDir, absPath)
-
 	files, err := os.ReadDir(s.chaptersDir)
 	if err != nil {
-		fmt.Printf("DEBUG: Error reading directory: %v\n", err)
 		return nil, err
 	}
-	fmt.Printf("DEBUG: Found %d files\n", len(files))
 
 	var chapters []Chapter
 	for _, f := range files {
